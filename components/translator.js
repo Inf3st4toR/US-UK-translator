@@ -24,36 +24,69 @@ class Translator {
         return time.replace(".", ":");
     }
 
-    us2uk(word) {
-        return (americanOnly[word] || americanToBritishSpelling[word] || americanToBritishTitles[word] || word);
+    us2ukSingle(word) {
+        return (americanToBritishSpelling[word] || americanToBritishTitles[word] || word);
     }
 
-    uk2us(word) {
-        return (britishOnly[word] || reverseTranslate(americanToBritishSpelling, word) || reverseTranslate(americanToBritishTitles, word) || word);
+    uk2usSingle(word) {
+        return (reverseTranslate(americanToBritishSpelling, word) || reverseTranslate(americanToBritishTitles, word) || word);
     }
 
-    // consider punctuation
     textProcess(text, locale) {
-        const textSplit = text.split(" ");
         const regexUS = /^\d{2}:\d{2}$/;
         const regexUK = /^\d{2}.\d{2}$/;
 
+        //Separate punctuation
+        const spacedText = text.replace(/[,!?]|\.$/g, ' $&');
+        const array0 = spacedText.split(" ");
+
+
         //US to UK translation
         if (locale === "american-to-british") {
-            const array0 = textSplit.map(word => {
+            for (let index = 0; index < array0.length; index++) {
+                for (const [key, val] of Object.entries(americanOnly)) {
+                    if (key.startsWith(array0[index])){
+                        const usWordArr = key.split(" ")
+                        if (usWordArr.every((usWord, i) => usWord === array0[index + i])){
+                            array0[index] = val;
+                            if (usWordArr.length > 1) {
+                                array0.splice(index+1, usWordArr.length -1);
+                            }
+                            break;
+                            
+                        }
+                    }
+                }
+            }
+            const array1 = array0.map(word => {
                 if (regexUS.test(word)) return this.translateUSTime(word);
-                return this.us2uk(word);
+                return this.us2ukSingle(word);
             });
-            return array0.join(" ");
+            return array1.join(" ").replace(/ ([.,!?])/g, '$1');
         }
 
         //UK to US translation
         if (locale === "british-to-american") {
-            const array1 = textSplit.map(word => {
+            for (let index = 0; index < array0.length; index++) {
+                for (const [key, val] of Object.entries(britishOnly)) {
+                    if (key.startsWith(array0[index])){
+                        const ukWordArr = key.split(" ")
+                        if (ukWordArr.every((ukWord, i) => ukWord === array0[index + i])){
+                            array0[index] = val;
+                            if (ukWordArr.length > 1) {
+                                array0.splice(index+1, ukWordArr.length -1);
+                            }
+                            break;
+                            
+                        }
+                    }
+                }
+            }
+            const array1 = array0.map(word => {
                 if (regexUK.test(word)) return this.translateUKTime(word);
-                return this.uk2us(word);
+                return this.uk2usSingle(word);
             });
-            return array0.join(" ");
+            return array1.join(" ").replace(/ ([.,!?])/g, '$1');
         }
 
         else return { error: 'Invalid value for locale field' };
