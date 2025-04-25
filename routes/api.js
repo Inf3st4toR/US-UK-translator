@@ -9,11 +9,15 @@ module.exports = function (app) {
   app.route('/api/translate')
     .post((req, res) => {
       const { text, locale } = req.body;
-      const translation = translator.textProcess(text, locale);
+      if (!locale ) return res.json({ error: 'Required field(s) missing' });
+      if (!text ) return res.json({ error: 'No text to translate' });
+      if (locale !== "american-to-british" && locale !== "british-to-american") return res.json({ error: 'Invalid value for locale field' });
+      let translation = translator.textProcess(text, locale);
+      if (text === translation) translation = "Everything looks good to me!";
       res.json({ text: text, translation: translation});
     });
 };
 
 /*
-2. You can POST to /api/translate with a body containing text with the text to translate and locale with either american-to-british or british-to-american. The returned object should contain the submitted text and translation with the translated text.
+
 */

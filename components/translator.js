@@ -25,11 +25,21 @@ class Translator {
     }
 
     us2ukSingle(word) {
-        return (americanToBritishSpelling[word] || americanToBritishTitles[word] || word);
+        const lowerWord = word.toLowerCase();
+        const spelling = americanToBritishSpelling[lowerWord];
+        const title = americanToBritishTitles[lowerWord];
+        if (spelling) return this.highlight(this.capitalize(word, spelling));
+        else if (title) return this.highlight(this.capitalize(word, title));
+        else return word;
     }
 
     uk2usSingle(word) {
-        return (this.reverseTranslate(americanToBritishSpelling, word) || this.reverseTranslate(americanToBritishTitles, word) || word);
+        const lowerWord = word.toLowerCase();
+        const spelling = this.reverseTranslate(americanToBritishSpelling, lowerWord);
+        const title = this.reverseTranslate(americanToBritishTitles, lowerWord);
+        if (spelling) return this.highlight(this.capitalize(word, spelling));
+        else if (title) return this.highlight(this.capitalize(word, title));
+        else return word;
     }
 
     capitalize(word, word2){
@@ -73,10 +83,7 @@ class Translator {
             const array1 = array0.map(word => {
                 if (regexUS.test(word)) return this.translateUSTime(word);
                 if (word.includes(" ")) return word;
-                else { 
-                    const ukWord = this.us2ukSingle(word.toLowerCase());
-                    return this.highlight(this.capitalize(word, ukWord));
-                }
+                else return this.us2ukSingle(word);
             });
             return array1.join(" ").replace(/ ([.,!?])/g, '$1');
         }
@@ -99,15 +106,12 @@ class Translator {
                     return this.translateUKTime(word);
                 }
                 if (word.includes(" ")) return word;
-                else { 
-                    const usWord = this.uk2usSingle(word.toLowerCase());
-                    return this.highlight(this.capitalize(word, usWord));
-                }
+                else return this.uk2usSingle(word);
             });
             return array1.join(" ").replace(/ ([.,!?])/g, '$1');
         }
 
-        else return { error: 'Invalid value for locale field' };
+        else return { error: 'Some other error happened.' };
     }
 }
 
