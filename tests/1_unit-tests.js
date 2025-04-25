@@ -38,7 +38,7 @@ suite('Unit Tests', () => {
       test('Translation 6', () => {
         const text = "Like a high tech Rube Goldberg machine.";
         const translation = translator.textProcess(text, "american-to-british");
-        assert.equal(translation, "Like a high tech Rube Goldberg machine.", 'Error in translation');
+        assert.equal(translation, "Like a high tech Heath Robinson machine.", 'Error in translation');
       });
 
       test('Translation 7', () => {
