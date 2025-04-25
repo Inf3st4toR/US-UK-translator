@@ -20,6 +20,7 @@ class Translator {
 
     translateUKTime(time) {
         const [hours, minutes] = time.split(".").map(Number);
+
         if (hours > 24 || minutes > 60) return time;
         return time.replace(".", ":");
     }
@@ -29,7 +30,7 @@ class Translator {
     }
 
     uk2usSingle(word) {
-        return (reverseTranslate(americanToBritishSpelling, word) || reverseTranslate(americanToBritishTitles, word) || word);
+        return (this.reverseTranslate(americanToBritishSpelling, word) || this.reverseTranslate(americanToBritishTitles, word) || word);
     }
 
     capitalize(word, word2){
@@ -40,12 +41,12 @@ class Translator {
     }
 
     textProcess(text, locale) {
-        const regexUS = /^\d{2}:\d{2}$/;
-        const regexUK = /^\d{2}.\d{2}$/;
+        const regexUS = /^\d{1,2}:\d{2}$/;
+        const regexUK = /^\d{1,2}\.\d{2}$/;
 
         //Separate punctuation
         const spacedText = text.replace(/[,!?]/g, ' $&');
-        const spacedText2 = spacedText.replace(/(^| )([\w-]+)\.( |$)/g , (match, part1, mot, part2) => {
+        const spacedText2 = spacedText.replace(/(^| )([\w\d-]+(?:\.\d+)?)\.( |$)/g , (match, part1, mot, part2) => {
             if (americanToBritishTitles.hasOwnProperty(mot.toLowerCase() + ".")) return match;
             else return part1 + mot + " ." + part2;
         });
@@ -81,22 +82,24 @@ class Translator {
         if (locale === "british-to-american") {
             for (let index = 0; index < array0.length; index++) {
                 for (const [key, val] of Object.entries(britishOnly)) {
-                    if (key.startsWith(array0[index])){
-                        const ukWordArr = key.split(" ")
-                        if (ukWordArr.every((ukWord, i) => ukWord === array0[index + i])){
-                            array0[index] = val;
+                    if (key.startsWith(array0[index].toLowerCase())){
+                        const ukWordArr = key.split(" ");
+                        if (ukWordArr.every((ukWord, i) => ukWord === array0[index + i].toLowerCase())){
+                            array0[index] = this.capitalize(array0[index], val);
                             if (ukWordArr.length > 1) {
                                 array0.splice(index+1, ukWordArr.length -1);
                             }
                             break;
-                            
-                        }
-                    }
-                }
-            }
+            }   }   }   }
             const array1 = array0.map(word => {
-                if (regexUK.test(word)) return this.translateUKTime(word);
-                return this.uk2usSingle(word);
+                if (regexUK.test(word)) {
+                    return this.translateUKTime(word);
+                }
+                if (word.includes(" ")) return word;
+                else { 
+                    const usWord = this.uk2usSingle(word.toLowerCase());
+                    return this.capitalize(word, usWord);
+                }
             });
             return array1.join(" ").replace(/ ([.,!?])/g, '$1');
         }
