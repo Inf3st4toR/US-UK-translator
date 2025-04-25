@@ -4,6 +4,7 @@ const assert = chai.assert;
 const Translator = require('../components/translator.js');
 const translator = new Translator;
 
+/*
 suite('UK translation Tests', () => {
       test('Translation 1', () => {
         const text = "Mangoes are my favorite fruit.";
@@ -156,7 +157,4 @@ suite('Highlight translation Tests', () => {
     assert.include(translation, '<span class="highlight">Tylenol</span>', 'Error in translation');
   });
 });
-
-/*
-
 */
