@@ -138,6 +138,23 @@ suite('Highlight translation Tests', () => {
     assert.include(translation, '<span class="highlight">favourite</span>', 'Error in translation');
   });
 
+  test('Highlight 2', () => {
+    const text = "I ate yogurt for breakfast.";
+    const translation = translator.textProcess(text, "american-to-british");
+    assert.include(translation, '<span class="highlight">yoghurt</span>', 'Error in translation');
+  });
+
+  test('Highlight 3', () => {
+    const text = "We watched the footie match for a while.";
+    const translation = translator.textProcess(text, "british-to-american");
+    assert.include(translation, '<span class="highlight">soccer</span>', 'Error in translation');
+  });
+
+  test('Highlight 4', () => {
+    const text = "Paracetamol takes up to an hour to work.";
+    const translation = translator.textProcess(text, "british-to-american");
+    assert.include(translation, '<span class="highlight">Tylenol</span>', 'Error in translation');
+  });
 });
 
 /*
