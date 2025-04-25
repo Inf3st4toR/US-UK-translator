@@ -15,14 +15,13 @@ class Translator {
     translateUSTime(time) {
         const [hours, minutes] = time.split(":").map(Number);
         if (hours > 24 || minutes > 60) return time;
-        return time.replace(":", ".");
+        return this.highlight(time.replace(":", "."));
     }
 
     translateUKTime(time) {
         const [hours, minutes] = time.split(".").map(Number);
-
         if (hours > 24 || minutes > 60) return time;
-        return time.replace(".", ":");
+        return this.highlight(time.replace(".", ":"));
     }
 
     us2ukSingle(word) {
@@ -38,6 +37,10 @@ class Translator {
             const capital = word2.charAt(0).toUpperCase() + word2.slice(1);
             return capital;
         } else return word2;
+    }
+
+    highlight(word){
+        return ('<span class="highlight">' + word + "</span>");
     }
 
     textProcess(text, locale) {
@@ -61,7 +64,7 @@ class Translator {
                     if (key.startsWith(array0[index].toLowerCase())){
                         const usWordArr = key.split(" ");
                         if (usWordArr.every((usWord, i) => usWord === array0[index + i].toLowerCase())){
-                            array0[index] = this.capitalize(array0[index], val);
+                            array0[index] = this.highlight(this.capitalize(array0[index], val));
                             if (usWordArr.length > 1) {
                                 array0.splice(index+1, usWordArr.length -1);
                             }
@@ -72,7 +75,7 @@ class Translator {
                 if (word.includes(" ")) return word;
                 else { 
                     const ukWord = this.us2ukSingle(word.toLowerCase());
-                    return this.capitalize(word, ukWord);
+                    return this.highlight(this.capitalize(word, ukWord));
                 }
             });
             return array1.join(" ").replace(/ ([.,!?])/g, '$1');
@@ -85,7 +88,7 @@ class Translator {
                     if (key.startsWith(array0[index].toLowerCase())){
                         const ukWordArr = key.split(" ");
                         if (ukWordArr.every((ukWord, i) => ukWord === array0[index + i].toLowerCase())){
-                            array0[index] = this.capitalize(array0[index], val);
+                            array0[index] = this.highlight(this.capitalize(array0[index], val));
                             if (ukWordArr.length > 1) {
                                 array0.splice(index+1, ukWordArr.length -1);
                             }
@@ -98,7 +101,7 @@ class Translator {
                 if (word.includes(" ")) return word;
                 else { 
                     const usWord = this.uk2usSingle(word.toLowerCase());
-                    return this.capitalize(word, usWord);
+                    return this.highlight(this.capitalize(word, usWord));
                 }
             });
             return array1.join(" ").replace(/ ([.,!?])/g, '$1');
